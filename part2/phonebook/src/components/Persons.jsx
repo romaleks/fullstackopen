@@ -13,7 +13,9 @@ const Persons = ({ persons, setPersons, newFilter }) => {
   return (
     <div>
       {persons
-        .filter((person) => person.name.toLowerCase().includes(newFilter))
+        .filter((person) =>
+          person.name.toLowerCase().includes(newFilter.toLowerCase()),
+        )
         .map((person) => (
           <Person
             key={person.name}

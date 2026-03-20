@@ -43,35 +43,64 @@ const App = () => {
             )
             setNewName('')
             setNewPhone('')
-          })
-          .catch((error) => {
             setNotificationMessage({
-              message: `Information of ${person.name} has already been removed from server`,
-              isSuccessful: false,
+              message: `Updated ${changedPerson.name}`,
+              isSuccessful: true,
             })
             setTimeout(() => {
               setNotificationMessage(null)
-              setPersons(
-                persons.filter((person) => person.id !== changedPerson.id),
-              )
             }, 3000)
+          })
+          .catch((error) => {
+            const status = error.response.status
+
+            if (status === 400) {
+              setNotificationMessage({
+                message: error.response.data.error,
+                isSuccessful: false,
+              })
+            } else if (status === 404) {
+              setNotificationMessage({
+                message: `Information of ${person.name} has already been removed from server`,
+                isSuccessful: false,
+              })
+              setTimeout(() => {
+                setNotificationMessage(null)
+                setPersons(
+                  persons.filter((person) => person.id !== changedPerson.id),
+                )
+              }, 3000)
+            } else {
+              setNotificationMessage({
+                message: `An unexpected error occurred: ${status}`,
+                isSuccessful: false,
+              })
+            }
           })
       }
     } else {
       const personObject = { name: newName, phone: newPhone }
 
-      personService.create(personObject).then((returnedPerson) => {
-        setPersons(persons.concat(returnedPerson))
-        setNewName('')
-        setNewPhone('')
-        setNotificationMessage({
-          message: `Added ${returnedPerson.name}`,
-          isSuccessful: true,
+      personService
+        .create(personObject)
+        .then((returnedPerson) => {
+          setPersons(persons.concat(returnedPerson))
+          setNewName('')
+          setNewPhone('')
+          setNotificationMessage({
+            message: `Added ${returnedPerson.name}`,
+            isSuccessful: true,
+          })
+          setTimeout(() => {
+            setNotificationMessage(null)
+          }, 3000)
         })
-        setTimeout(() => {
-          setNotificationMessage(null)
-        }, 3000)
-      })
+        .catch((error) => {
+          setNotificationMessage({
+            message: error.response.data.error,
+            isSuccessful: false,
+          })
+        })
     }
   }
 
