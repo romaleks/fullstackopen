@@ -1,7 +1,7 @@
 import express, { NextFunction, Request, Response } from 'express'
 import z from 'zod'
 import patientService from '../services/patientService'
-import { newPatient, NonSensitivePatient } from '../types'
+import { newPatient, NonSensitivePatient, Patient } from '../types'
 import newPatientSchema from '../utils'
 
 const router = express.Router()
@@ -29,7 +29,11 @@ const errorMiddleware = (
 }
 
 router.get('/', (_req, res: Response<NonSensitivePatient[]>) => {
-  res.json(patientService.getNonSensitiveDiagnoses())
+  res.json(patientService.getNonSensitivePatients())
+})
+
+router.get('/:id', (req, res: Response<Patient>) => {
+  res.json(patientService.getPatientById(req.params.id))
 })
 
 router.post(
